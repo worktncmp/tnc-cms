@@ -59,10 +59,19 @@ Leave that window open. Visit:
 
 **http://127.0.0.1:8080**
 
-## 6. Sign in (optional)
+## 6. Sign in to the admin area
 
-- Email: `editor@example.com`
-- Password: `TNC-demo-1`
+1. Visit **http://127.0.0.1:8080/login**
+2. Use:
+   - Email: `editor@example.com`
+   - Password: `TNC-demo-1`
+3. You are taken to `/admin` where you can:
+   - Edit content pages
+   - Read contact messages
+   - (Admins) manage products and users
+   - Change your password
+
+Public pages still work without signing in.
 
 ## What next?
 

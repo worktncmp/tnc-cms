@@ -1,7 +1,7 @@
 <section class="narrow">
-    <p class="eyebrow">Account</p>
+    <p class="eyebrow">Admin</p>
     <h1>Sign in</h1>
-    <p>Use the sample account from the README after you run the database setup.</p>
+    <p>Sign in to open the admin area: messages, products, and your account.</p>
     <form method="post" action="<?= url('/login') ?>" class="stack">
         <?= csrf_field() ?>
         <label>

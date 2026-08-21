@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Core\Application;
+use Core\Auth;
 
 $basePath = dirname(__DIR__);
 require $basePath . '/core/Autoloader.php';
@@ -38,21 +39,27 @@ foreach (explode(';', $sql) as $chunk) {
     }
 }
 
+ensureRoleColumn($db, $driver);
+
 $users = $db->fetch('SELECT COUNT(*) AS total FROM users');
 if ((int) ($users['total'] ?? 0) === 0) {
     $db->insert('users', [
         'email' => 'editor@example.com',
         'password_hash' => $app->auth()->hash('TNC-demo-1'),
-        'name' => 'Editor',
+        'name' => 'Admin',
+        'role' => Auth::ROLE_ADMIN,
         'created_at' => date('c'),
     ]);
 } else {
-    // Keep existing users, but ensure the sample account password matches the docs.
     $demo = $db->fetch('SELECT id FROM users WHERE email = ?', ['editor@example.com']);
     if ($demo !== null) {
         $db->update(
             'users',
-            ['password_hash' => $app->auth()->hash('TNC-demo-1')],
+            [
+                'password_hash' => $app->auth()->hash('TNC-demo-1'),
+                'role' => Auth::ROLE_ADMIN,
+                'name' => 'Admin',
+            ],
             'email = ?',
             ['editor@example.com'],
         );
@@ -74,4 +81,30 @@ if ((int) ($products['total'] ?? 0) === 0) {
 }
 
 echo "Database ready.\n";
-echo "Sample login: editor@example.com / TNC-demo-1\n";
+echo "Sample admin login: editor@example.com / TNC-demo-1\n";
+
+/**
+ * @param \Core\Database $db
+ */
+function ensureRoleColumn(\Core\Database $db, string $driver): void
+{
+    if ($driver === 'sqlite') {
+        $columns = $db->fetchAll('PRAGMA table_info(users)');
+        foreach ($columns as $column) {
+            if (($column['name'] ?? '') === 'role') {
+                return;
+            }
+        }
+        $db->pdo()->exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'editor'");
+        return;
+    }
+
+    $row = $db->fetch(
+        'SELECT COUNT(*) AS total FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+        ['users', 'role'],
+    );
+    if ((int) ($row['total'] ?? 0) === 0) {
+        $db->pdo()->exec("ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'editor'");
+    }
+}

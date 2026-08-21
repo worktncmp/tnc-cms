@@ -66,6 +66,14 @@ $app->db()->insert('users', [
     'email' => 'tester@example.com',
     'password_hash' => $app->auth()->hash('secret-pass'),
     'name' => 'Tester',
+    'role' => 'admin',
+    'created_at' => date('c'),
+]);
+$app->db()->insert('users', [
+    'email' => 'writer@example.com',
+    'password_hash' => $app->auth()->hash('secret-pass'),
+    'name' => 'Writer',
+    'role' => 'editor',
     'created_at' => date('c'),
 ]);
 $productId = $app->db()->insert('products', [
@@ -210,10 +218,72 @@ test('authentication hashes and verifies passwords', function () use ($app): voi
     assertTrue($app->auth()->check() === false, 'User should be signed out');
 });
 
-test('protected account page is forbidden when logged out', function () use ($app): void {
+test('admin area is forbidden when logged out', function () use ($app): void {
     $store = [];
-    $response = handle($app, Request::fake('GET', '/account'), $store);
+    $response = handle($app, Request::fake('GET', '/admin'), $store);
     assertTrue($response->status() === 403, 'Expected 403, got ' . $response->status());
+});
+
+test('admin dashboard works when logged in', function () use ($app): void {
+    $store = [];
+    $app->withSession(Session::fake($store));
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $response = $app->handle(Request::fake('GET', '/admin'));
+    assertTrue($response->status() === 200, 'Expected 200, got ' . $response->status());
+    assertTrue(str_contains($response->body(), 'Dashboard'), 'Dashboard missing');
+});
+
+test('admin can create a product', function () use ($app): void {
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+    $response = $app->handle(Request::fake('POST', '/admin/products', [], [
+        '_csrf' => $token,
+        'title' => 'Admin created',
+        'summary' => 'From admin test',
+        'body' => 'Body created in the admin area.',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect, got ' . $response->status());
+    $row = $app->db()->fetch('SELECT * FROM products WHERE title = ?', ['Admin created']);
+    assertTrue($row !== null, 'Product was not created');
+});
+
+test('editor cannot manage products', function () use ($app): void {
+    $store = [];
+    $app->withSession(Session::fake($store));
+    assertTrue($app->auth()->attempt('writer@example.com', 'secret-pass'), 'editor login failed');
+    $response = $app->handle(Request::fake('GET', '/admin/products'));
+    assertTrue($response->status() === 403, 'Expected 403, got ' . $response->status());
+});
+
+test('admin can create and edit an HTML content page', function () use ($app, $basePath): void {
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+
+    $response = $app->handle(Request::fake('POST', '/admin/pages', [], [
+        '_csrf' => $token,
+        'path' => 'practice-lab',
+        'title' => 'Practice Lab',
+        'body' => '<h1>Practice Lab</h1><p>Created from admin.</p>',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect, got ' . $response->status());
+
+    $file = $basePath . '/content/pages/practice-lab/index.html';
+    assertTrue(is_file($file), 'Page file missing');
+
+    $pageResponse = $app->handle(Request::fake('GET', '/practice-lab'));
+    assertTrue($pageResponse->status() === 200, 'Public page missing');
+    assertTrue(str_contains($pageResponse->body(), 'Created from admin'), 'Page body missing');
+
+    // cleanup
+    @unlink($file);
+    @unlink($basePath . '/content/pages/practice-lab/page.json');
+    @rmdir($basePath . '/content/pages/practice-lab');
 });
 
 test('view rendering escapes untrusted text', function () use ($app): void {

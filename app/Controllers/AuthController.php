@@ -12,7 +12,7 @@ final class AuthController extends Controller
     public function show(): Response
     {
         if ($this->auth()->check()) {
-            return $this->redirect('/account');
+            return $this->redirect('/admin');
         }
 
         return $this->view('auth/login', [
@@ -32,7 +32,7 @@ final class AuthController extends Controller
             return $this->redirect('/login');
         }
 
-        return $this->redirect('/account');
+        return $this->redirect('/admin');
     }
 
     public function logout(): Response
@@ -40,15 +40,5 @@ final class AuthController extends Controller
         $this->auth()->logout();
 
         return $this->redirect('/');
-    }
-
-    public function account(): Response
-    {
-        $user = $this->auth()->require();
-
-        return $this->view('auth/account', [
-            'title' => 'Account',
-            'user' => $user,
-        ]);
     }
 }

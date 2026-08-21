@@ -16,6 +16,7 @@ TNC-CMS is a small PHP website foundation. Copy this project, configure it, add 
 | Writing PHP, routes, database code | [For developers](docs/for-developers.md) |
 | “Where do I put X?” | [Folder guide](docs/folder-guide.md) |
 | Going live safely | [Security](docs/security.md) |
+| Using the admin area | [Admin](docs/admin.md) |
 | How the system is designed | [Architecture](docs/architecture.md) |
 
 ---
@@ -29,7 +30,7 @@ php -S 127.0.0.1:8080 -t public public/router.php
 
 Open [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-Sample login (after migrate):
+Sample login (admin):
 
 - Email: `editor@example.com`
 - Password: `TNC-demo-1`
@@ -46,6 +47,9 @@ Sample login (after migrate):
 | `/services/web-development` | Nested page inheriting that layout |
 | `/contact` | Form (POST handled by a controller) |
 | `/products` | Database list via controller |
+| `/admin` | Protected admin (after sign in) |
+
+Sample login opens the **admin area**, where you can read contact messages and manage products.
 
 ---
 

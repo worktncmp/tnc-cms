@@ -6,6 +6,31 @@ namespace Core;
 
 final class Auth
 {
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_EDITOR = 'editor';
+
+    /** @var array<string, list<string>> */
+    private const PERMISSIONS = [
+        self::ROLE_ADMIN => [
+            'admin.access',
+            'pages.view',
+            'pages.manage',
+            'messages.view',
+            'messages.manage',
+            'products.view',
+            'products.manage',
+            'users.view',
+            'users.manage',
+        ],
+        self::ROLE_EDITOR => [
+            'admin.access',
+            'pages.view',
+            'pages.manage',
+            'messages.view',
+            'messages.manage',
+        ],
+    ];
+
     public function __construct(private readonly Application $app)
     {
     }
@@ -61,10 +86,20 @@ final class Auth
             return null;
         }
 
-        return $this->app->db()->fetch(
-            'SELECT id, email, name, created_at FROM users WHERE id = ? LIMIT 1',
+        $user = $this->app->db()->fetch(
+            'SELECT id, email, name, role, created_at FROM users WHERE id = ? LIMIT 1',
             [$id],
         );
+
+        if ($user === null) {
+            return null;
+        }
+
+        if (!isset($user['role']) || $user['role'] === '' || $user['role'] === null) {
+            $user['role'] = self::ROLE_EDITOR;
+        }
+
+        return $user;
     }
 
     /** @return array<string, mixed> */
@@ -73,6 +108,42 @@ final class Auth
         $user = $this->user();
         if ($user === null) {
             throw HttpException::forbidden('Authentication required.');
+        }
+
+        return $user;
+    }
+
+    public function role(): string
+    {
+        $user = $this->user();
+        if ($user === null) {
+            return '';
+        }
+
+        $role = (string) ($user['role'] ?? self::ROLE_EDITOR);
+
+        return $role !== '' ? $role : self::ROLE_EDITOR;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role() === self::ROLE_ADMIN;
+    }
+
+    public function can(string $permission): bool
+    {
+        $role = $this->role();
+        $allowed = self::PERMISSIONS[$role] ?? [];
+
+        return in_array($permission, $allowed, true);
+    }
+
+    /** @return array<string, mixed> */
+    public function requirePermission(string $permission): array
+    {
+        $user = $this->require();
+        if (!$this->can($permission)) {
+            throw HttpException::forbidden('You do not have permission to do that.');
         }
 
         return $user;

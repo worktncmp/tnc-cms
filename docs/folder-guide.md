@@ -8,7 +8,9 @@
 | `public/uploads/` | Public uploaded files | The app |
 | `content/pages/` | Normal pages. Folder name = URL. | Editors and developers |
 | `app/routes.php` | Extra URLs that need PHP logic | Developers |
-| `app/Controllers/` | Form posts, database pages | Developers |
+| `app/Controllers/` | Form posts, database pages, admin | Developers |
+| `app/Controllers/Admin/` | Protected admin screens | Developers |
+| `app/Views/admin/` | Admin page templates | Developers |
 | `app/Models/` | Table queries | Developers |
 | `app/Views/layouts/` | Page frames (`default.php`, `blank.php`) | Developers |
 | `app/Views/partials/` | Header, footer, menu | Editors (carefully) / developers |

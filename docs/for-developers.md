@@ -145,18 +145,29 @@ Never concatenate user input into SQL.
 
 ---
 
-## Auth
+## Authentication and admin
+
+Public pages work without login.
+
+After sign in (`/login`), you land on `/admin`:
+
+| URL | Purpose | Roles |
+|---|---|---|
+| `/admin` | Dashboard | admin, editor |
+| `/admin/pages` | Create / edit / delete content pages | admin, editor |
+| `/admin/messages` | Contact form inbox | admin, editor |
+| `/admin/products` | Work items CRUD | admin |
+| `/admin/users` | Users and roles | admin |
+| `/admin/account` | Change password | admin, editor |
+
+Permissions are checked with:
 
 ```php
-$this->auth()->attempt($email, $password);
-$this->auth()->check();
-$this->auth()->user();
-$this->auth()->require(); // 403 if logged out
-$this->auth()->logout();
-$this->auth()->hash($password);
+$this->auth()->can('pages.manage');
+$this->auth()->requirePermission('products.manage');
 ```
 
-Forms that change data need `<?= csrf_field() ?>`.
+Roles: `admin`, `editor`. Controllers live under `app/Controllers/Admin/`.
 
 ---
 
