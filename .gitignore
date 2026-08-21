@@ -1,0 +1,13 @@
+.env
+/storage/logs/*
+/storage/cache/*
+/storage/sessions/*
+/storage/uploads/*
+/storage/database.sqlite
+/public/uploads/*
+!/public/uploads/.htaccess
+!/public/uploads/.gitkeep
+!/**/.gitkeep
+
+.DS_Store
+Thumbs.db
