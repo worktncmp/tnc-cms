@@ -35,6 +35,11 @@ Sample login (admin):
 - Email: `editor@example.com`
 - Password: `TNC-demo-1`
 
+Sample login (writer):
+
+- Email: `writer@example.com`
+- Password: `a-strong-password`
+
 ---
 
 ## Sample pages included
