@@ -155,6 +155,7 @@ After sign in (`/login`), you land on `/admin`:
 |---|---|---|
 | `/admin` | Dashboard | admin, editor |
 | `/admin/pages` | Create / edit / delete content pages | admin, editor |
+| `/admin/media` | Upload and manage images | admin, editor |
 | `/admin/messages` | Contact form inbox | admin, editor |
 | `/admin/products` | Work items CRUD | admin |
 | `/admin/users` | Users and roles | admin |

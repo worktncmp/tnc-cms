@@ -327,6 +327,60 @@ button.linkish:hover {
     color: var(--muted);
 }
 
+.editor-wide {
+    max-width: 52rem;
+}
+
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.media-card {
+    border: 1px solid var(--line);
+    padding: 0.75rem;
+    background: #faf7f1;
+}
+
+.media-card img {
+    display: block;
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+    background: #fff;
+}
+
+.media-name {
+    font-size: 0.8rem;
+    word-break: break-all;
+    margin-bottom: 0.4rem;
+}
+
+.media-url {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
 @media (max-width: 720px) {
     .nav-toggle {
         display: inline-block;

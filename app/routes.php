@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\Admin\AccountController as AdminAccountController;
 use App\Controllers\Admin\DashboardController;
+use App\Controllers\Admin\MediaController as AdminMediaController;
 use App\Controllers\Admin\MessageController as AdminMessageController;
 use App\Controllers\Admin\PageController as AdminPageController;
 use App\Controllers\Admin\ProductController as AdminProductController;
@@ -33,6 +34,11 @@ $router->post('/admin/pages', [AdminPageController::class, 'store']);
 $router->get('/admin/pages/edit', [AdminPageController::class, 'edit']);
 $router->post('/admin/pages/save', [AdminPageController::class, 'update']);
 $router->post('/admin/pages/delete', [AdminPageController::class, 'destroy']);
+$router->post('/admin/pages/convert', [AdminPageController::class, 'convert']);
+
+$router->get('/admin/media', [AdminMediaController::class, 'index'], 'admin.media');
+$router->post('/admin/media', [AdminMediaController::class, 'store']);
+$router->post('/admin/media/delete', [AdminMediaController::class, 'destroy']);
 
 $router->get('/admin/messages', [AdminMessageController::class, 'index'], 'admin.messages');
 $router->get('/admin/messages/{id}', [AdminMessageController::class, 'show']);

@@ -11,6 +11,13 @@
                 <p><a href="<?= url('/admin/pages') ?>">Edit pages</a></p>
             </article>
         <?php endif; ?>
+        <?php if (!empty($canMedia)): ?>
+            <article class="card">
+                <h3><?= (int) $mediaCount ?></h3>
+                <p>Media files</p>
+                <p><a href="<?= url('/admin/media') ?>">Open media</a></p>
+            </article>
+        <?php endif; ?>
         <?php if (!empty($canMessages)): ?>
             <article class="card">
                 <h3><?= (int) $messageCount ?></h3>

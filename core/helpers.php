@@ -76,3 +76,19 @@ function old(string $key, string $default = ''): string
 
     return $default;
 }
+
+function safe_internal_path(string $path): ?string
+{
+    $path = trim($path);
+    if ($path === '' || !str_starts_with($path, '/') || str_starts_with($path, '//')) {
+        return null;
+    }
+    if (str_contains($path, "\0") || str_contains($path, '\\')) {
+        return null;
+    }
+    if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.-]*:#', $path) === 1) {
+        return null;
+    }
+
+    return $path;
+}

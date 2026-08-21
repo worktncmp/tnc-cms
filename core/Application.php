@@ -264,6 +264,24 @@ final class Application
     private function httpError(HttpException $exception): Response
     {
         $status = $exception->status;
+
+        if (
+            $status === 403
+            && $this->request !== null
+            && !$this->auth()->check()
+            && str_starts_with($this->request->path, '/admin')
+        ) {
+            $intended = $this->request->path;
+            $query = $this->request->query;
+            if ($query !== []) {
+                $intended .= '?' . http_build_query($query);
+            }
+            $safe = safe_internal_path($intended);
+            if ($safe !== null) {
+                $this->session()->set('intended_url', $safe);
+            }
+        }
+
         $view = match ($status) {
             404 => 'errors/404',
             403 => 'errors/403',
@@ -283,6 +301,7 @@ final class Application
         $data['message'] = $this->isDebug() || $status < 500 ? $exception->getMessage() : 'An unexpected error occurred.';
         $data['debug'] = $this->isDebug();
         $data['trace'] = $this->isDebug() ? $exception->getTraceAsString() : '';
+        $data['showLogin'] = $status === 403 && ($this->auth()->user() === null);
 
         try {
             $html = $this->view()->render($view, $data);

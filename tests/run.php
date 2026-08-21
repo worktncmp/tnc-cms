@@ -286,6 +286,67 @@ test('admin can create and edit an HTML content page', function () use ($app, $b
     @rmdir($basePath . '/content/pages/practice-lab');
 });
 
+test('login returns to the intended admin URL', function () use ($app): void {
+    $store = [];
+    $response = handle($app, Request::fake('GET', '/admin/pages'), $store);
+    assertTrue($response->status() === 403, 'Expected 403');
+    assertTrue(($store['intended_url'] ?? null) === '/admin/pages', 'Intended URL not stored');
+
+    $session = Session::fake($store);
+    $app->withSession($session);
+    $token = $app->csrf()->token($session);
+    $login = $app->handle(Request::fake('POST', '/login', [], [
+        '_csrf' => $token,
+        'email' => 'tester@example.com',
+        'password' => 'secret-pass',
+        'redirect' => '/admin/pages',
+    ]));
+    assertTrue($login->status() === 302, 'Expected login redirect');
+    assertTrue(($login->headers()['Location'] ?? '') === 'http://127.0.0.1:8080/admin/pages', 'Wrong redirect target');
+});
+
+test('admin media page lists uploads', function () use ($app): void {
+    $store = [];
+    $app->withSession(Session::fake($store));
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $response = $app->handle(Request::fake('GET', '/admin/media'));
+    assertTrue($response->status() === 200, 'Expected 200, got ' . $response->status());
+    assertTrue(str_contains($response->body(), 'Media'), 'Media heading missing');
+});
+
+test('admin can convert a PHP page to HTML', function () use ($app, $basePath): void {
+    $dir = $basePath . '/content/pages/convert-demo';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+    file_put_contents($dir . '/index.php', "<?php\n\$page = ['title' => 'Convert Demo'];\n?>\n<h1>Convert Demo</h1>\n<p>Body from PHP.</p>\n");
+    file_put_contents($dir . '/page.json', "{\"title\": \"Convert Demo\"}\n");
+
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+    $response = $app->handle(Request::fake('POST', '/admin/pages/convert', [], [
+        '_csrf' => $token,
+        'path' => 'convert-demo',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect, got ' . $response->status());
+    assertTrue(is_file($dir . '/index.html'), 'HTML file missing');
+    assertTrue(!is_file($dir . '/index.php'), 'PHP file should be removed');
+    assertTrue(str_contains((string) file_get_contents($dir . '/index.html'), 'Body from PHP'), 'Body not preserved');
+
+    @unlink($dir . '/index.html');
+    @unlink($dir . '/page.json');
+    @rmdir($dir);
+});
+
+test('safe_internal_path rejects open redirects', function (): void {
+    assertTrue(safe_internal_path('/admin/pages') === '/admin/pages', 'valid path');
+    assertTrue(safe_internal_path('https://evil.test') === null, 'absolute URL');
+    assertTrue(safe_internal_path('//evil.test') === null, 'protocol-relative');
+});
+
 test('view rendering escapes untrusted text', function () use ($app): void {
     $store = [];
     handle($app, Request::fake('GET', '/'), $store);

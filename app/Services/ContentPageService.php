@@ -152,9 +152,37 @@ final class ContentPageService
         $this->removeEmptyParents($directory);
     }
 
+    public function convertToHtml(string $path): void
+    {
+        $page = $this->find($path);
+        if ($page['type'] !== 'php') {
+            throw new \InvalidArgumentException('This page is already editable HTML.');
+        }
+
+        $directory = $this->directoryFor($page['path']);
+        $phpFile = $directory . DIRECTORY_SEPARATOR . 'index.php';
+        $raw = (string) file_get_contents($phpFile);
+        $body = $this->extractHtmlFromPhp($raw);
+        if ($body === '') {
+            $body = '<h1>' . htmlspecialchars($page['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h1>'
+                . "\n<p>This page was converted from PHP. Replace this text in the admin editor.</p>";
+        }
+
+        $this->writeHtmlPage($directory, $page['title'], $body);
+    }
+
     public function count(): int
     {
         return count($this->all());
+    }
+
+    private function extractHtmlFromPhp(string $raw): string
+    {
+        if (preg_match('/\?>\s*(.*)\s*$/s', $raw, $matches) === 1) {
+            return trim($matches[1]);
+        }
+
+        return '';
     }
 
     private function writeHtmlPage(string $directory, string $title, string $body): void

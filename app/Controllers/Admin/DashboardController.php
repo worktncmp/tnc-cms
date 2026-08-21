@@ -38,12 +38,18 @@ final class DashboardController extends AdminController
             $pageCount = $this->pages()->count();
         }
 
+        $mediaCount = 0;
+        if ($this->auth()->can('media.view')) {
+            $mediaCount = count((new \App\Services\MediaService($this->app->basePath('public/uploads')))->all());
+        }
+
         return $this->adminView('admin/dashboard', [
             'title' => 'Admin',
             'messageCount' => $messageCount,
             'productCount' => $productCount,
             'userCount' => $userCount,
             'pageCount' => $pageCount,
+            'mediaCount' => $mediaCount,
             'recentMessages' => $recent,
             'role' => $this->auth()->role(),
         ]);

@@ -16,6 +16,9 @@
                     <?php if (!empty($canPages)): ?>
                         <a href="<?= url('/admin/pages') ?>"<?= str_starts_with($currentPath ?? '', '/admin/pages') ? ' aria-current="page"' : '' ?>>Pages</a>
                     <?php endif; ?>
+                    <?php if (!empty($canMedia)): ?>
+                        <a href="<?= url('/admin/media') ?>"<?= str_starts_with($currentPath ?? '', '/admin/media') ? ' aria-current="page"' : '' ?>>Media</a>
+                    <?php endif; ?>
                     <?php if (!empty($canMessages)): ?>
                         <a href="<?= url('/admin/messages') ?>"<?= str_starts_with($currentPath ?? '', '/admin/messages') ? ' aria-current="page"' : '' ?>>Messages</a>
                     <?php endif; ?>
@@ -44,5 +47,6 @@
         <?php endif; ?>
         <?= $content ?>
     </main>
+    <script src="<?= asset('js/admin.js') ?>"></script>
 </body>
 </html>

@@ -21,6 +21,7 @@ abstract class AdminController extends Controller
     protected function adminView(string $name, array $data = []): Response
     {
         $data['canPages'] = $this->auth()->can('pages.view');
+        $data['canMedia'] = $this->auth()->can('media.view');
         $data['canMessages'] = $this->auth()->can('messages.view');
         $data['canProducts'] = $this->auth()->can('products.view');
         $data['canUsers'] = $this->auth()->can('users.view');

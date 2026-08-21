@@ -119,6 +119,33 @@ final class PageController extends AdminController
         return $this->redirect('/admin/pages');
     }
 
+    public function convert(): Response
+    {
+        $this->auth()->requirePermission('pages.manage');
+        if (!$this->auth()->isAdmin()) {
+            $this->session()->flash('error', 'Only admins can convert PHP pages to HTML.');
+
+            return $this->redirect('/admin/pages');
+        }
+
+        $path = $this->requestPath();
+
+        try {
+            $this->pages()->convertToHtml($path);
+        } catch (\Throwable $e) {
+            $this->session()->flash('error', $e->getMessage());
+            $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
+
+            return $this->redirect('/admin/pages/edit' . $query);
+        }
+
+        $this->clearPageCache();
+        $this->session()->flash('success', 'Page converted to editable HTML. Review the content before publishing.');
+        $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
+
+        return $this->redirect('/admin/pages/edit' . $query);
+    }
+
     private function requestPath(): string
     {
         $path = (string) $this->request()->input('path', '');
