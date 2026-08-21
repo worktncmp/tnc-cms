@@ -3,8 +3,6 @@
 TNC-CMS is a small PHP website foundation. Copy this project, configure it, add pages as folders, and use controllers only when you need forms or a database.
 
 - PHP 8.2+
-- No Composer
-- No WordPress, no Laravel
 - Web root is always `public/`
 
 ---
