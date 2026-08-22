@@ -388,6 +388,62 @@ test('admin can convert a PHP page to HTML', function () use ($app, $basePath): 
     @rmdir($dir);
 });
 
+test('admin can convert an HTML page to PHP', function () use ($app, $basePath): void {
+    $dir = $basePath . '/content/pages/convert-html-demo';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+    file_put_contents($dir . '/index.html', "<h1>Convert HTML Demo</h1>\n<p>Body from HTML.</p>\n");
+    file_put_contents($dir . '/page.json', "{\"title\": \"Convert HTML Demo\"}\n");
+
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+    $response = $app->handle(Request::fake('POST', '/admin/pages/convert-to-php', [], [
+        '_csrf' => $token,
+        'path' => 'convert-html-demo',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect, got ' . $response->status());
+    assertTrue(is_file($dir . '/index.php'), 'PHP file missing');
+    assertTrue(!is_file($dir . '/index.html'), 'HTML file should be removed');
+
+    $php = (string) file_get_contents($dir . '/index.php');
+    assertTrue(str_contains($php, "'title' => 'Convert HTML Demo'"), 'Title header missing');
+    assertTrue(str_contains($php, 'Body from HTML.'), 'Body not preserved');
+
+    @unlink($dir . '/index.php');
+    @unlink($dir . '/page.json');
+    @rmdir($dir);
+});
+
+test('editor cannot convert page types', function () use ($app, $basePath): void {
+    $dir = $basePath . '/content/pages/convert-blocked';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+    file_put_contents($dir . '/index.html', "<p>Blocked</p>\n");
+    file_put_contents($dir . '/page.json', "{\"title\": \"Blocked\"}\n");
+
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('writer@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+    $response = $app->handle(Request::fake('POST', '/admin/pages/convert-to-php', [], [
+        '_csrf' => $token,
+        'path' => 'convert-blocked',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect');
+    assertTrue(is_file($dir . '/index.html'), 'HTML should remain');
+    assertTrue(!is_file($dir . '/index.php'), 'PHP should not be created');
+
+    @unlink($dir . '/index.html');
+    @unlink($dir . '/page.json');
+    @rmdir($dir);
+});
+
 test('page HTML sanitizer strips script tags', function () use ($app, $basePath): void {
     $store = [];
     $session = Session::fake($store);

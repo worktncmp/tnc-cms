@@ -35,6 +35,7 @@ $router->get('/admin/pages/edit', [AdminPageController::class, 'edit']);
 $router->post('/admin/pages/save', [AdminPageController::class, 'update']);
 $router->post('/admin/pages/delete', [AdminPageController::class, 'destroy']);
 $router->post('/admin/pages/convert', [AdminPageController::class, 'convert']);
+$router->post('/admin/pages/convert-to-php', [AdminPageController::class, 'convertToPhp']);
 
 $router->get('/admin/media', [AdminMediaController::class, 'index'], 'admin.media');
 $router->get('/admin/media/list.json', [AdminMediaController::class, 'list']);

@@ -33,7 +33,8 @@ New pages are saved as `index.html` + `page.json` under `content/pages`.
 - If the CDN is blocked, simple HTML toolbar buttons are used instead.
 - For images: click the **image** button in the editor toolbar to open the Media library picker, or upload first at **Media**.
 - **Save** keeps you on the edit screen. **Save and close** returns to the pages list.
-- Existing `index.php` “code” pages: change the title anytime. An **admin** can click **Convert to HTML** to make the body editable in admin (this replaces the PHP file).
+- Existing `index.php` “code” pages: change the title anytime. An **admin** can click **Convert to HTML** to make the body editable in admin (replaces the PHP file).
+- Existing `index.html` pages: an **admin** can click **Convert to PHP** to turn the page into a code template (replaces the HTML file; body is no longer WYSIWYG-editable).
 - Saved HTML is lightly cleaned (scripts and inline event handlers are stripped).
 
 URL paths must be lowercase with hyphens (e.g. `our-team`, not `Our Team`). The path field auto-formats as you type.

@@ -176,6 +176,23 @@ final class ContentPageService
         $this->writeHtmlPage($directory, $page['title'], $body);
     }
 
+    public function convertToPhp(string $path): void
+    {
+        $page = $this->find($path);
+        if ($page['type'] !== 'html') {
+            throw new \InvalidArgumentException('This page is already a PHP template.');
+        }
+
+        $directory = $this->directoryFor($page['path']);
+        $htmlFile = $directory . DIRECTORY_SEPARATOR . 'index.html';
+        $body = trim((string) file_get_contents($htmlFile));
+        if ($body === '') {
+            throw new \InvalidArgumentException('Page content is empty. Add content before converting to PHP.');
+        }
+
+        $this->writePhpPage($directory, $page['title'], $body);
+    }
+
     public function count(): int
     {
         return count($this->all());
@@ -199,6 +216,21 @@ final class ContentPageService
         $php = $directory . DIRECTORY_SEPARATOR . 'index.php';
         if (is_file($php)) {
             unlink($php);
+        }
+    }
+
+    private function writePhpPage(string $directory, string $title, string $body): void
+    {
+        $this->assertInsidePages($directory);
+        $this->writeJsonTitle($directory, $title);
+
+        $header = "<?php\n\$page = [\n    'title' => " . var_export(trim($title), true) . ",\n];\n?>\n";
+        $body = str_replace("\r\n", "\n", trim($body));
+        file_put_contents($directory . DIRECTORY_SEPARATOR . 'index.php', $header . $body . "\n");
+
+        $html = $directory . DIRECTORY_SEPARATOR . 'index.html';
+        if (is_file($html)) {
+            unlink($html);
         }
     }
 

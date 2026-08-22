@@ -102,6 +102,7 @@ If you set neither, the title is taken from the folder name.
 |---|---|---|
 | `index.html` | Yes | Safest for editor content. PHP inside is not run. |
 | `index.php` | Title only | Code template. An admin can **Convert to HTML** to edit the body in admin. |
+| `index.html` | Yes | An admin can **Convert to PHP** to add code logic (loses WYSIWYG body editing). |
 
 Example HTML page: `content/pages/services/index.html`
 

@@ -41,6 +41,16 @@ if ($siteBase === '') {
                 </form>
             <?php endif; ?>
         </div>
+    <?php elseif ($isEdit && $editable && !empty($isAdmin)): ?>
+        <div class="card editor-notice">
+            <p>This page is editable HTML (<code>index.html</code>).</p>
+            <p class="muted">To add PHP logic, an admin can convert it to a code template. The HTML file will be replaced with <code>index.php</code> and the visual editor will no longer apply to the body.</p>
+            <form method="post" action="<?= url('/admin/pages/convert-to-php') ?>" onsubmit="return confirm('Convert this HTML page to PHP? The HTML file will be replaced and the body will only be editable in code.');">
+                <?= csrf_field() ?>
+                <input type="hidden" name="path" value="<?= e((string) $page['path']) ?>">
+                <button type="submit" class="button-quiet">Convert to PHP</button>
+            </form>
+        </div>
     <?php endif; ?>
 
     <form

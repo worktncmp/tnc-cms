@@ -82,7 +82,7 @@ Convention pages live under `content/pages`. Each page folder typically has:
 
 **Public site:** `PageResolver` discovers pages and serves them through layouts.
 
-**Admin:** `ContentPageService` reads and writes HTML pages on disk, sanitizes saved HTML, and can convert `index.php` → `index.html` (admin role only).
+**Admin:** `ContentPageService` reads and writes HTML pages on disk, sanitizes saved HTML, and can convert between `index.php` and `index.html` in either direction (admin role only).
 
 After page changes in production, rebuild the route cache: `php scripts/cache-pages.php`.
 

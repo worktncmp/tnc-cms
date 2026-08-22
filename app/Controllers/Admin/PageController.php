@@ -148,9 +148,19 @@ final class PageController extends AdminController
 
     public function convert(): Response
     {
+        return $this->convertPage('html');
+    }
+
+    public function convertToPhp(): Response
+    {
+        return $this->convertPage('php');
+    }
+
+    private function convertPage(string $target): Response
+    {
         $this->auth()->requirePermission('pages.manage');
         if (!$this->auth()->isAdmin()) {
-            $this->session()->flash('error', 'Only admins can convert PHP pages to HTML.');
+            $this->session()->flash('error', 'Only admins can convert page types.');
 
             return $this->redirect('/admin/pages');
         }
@@ -158,7 +168,13 @@ final class PageController extends AdminController
         $path = $this->requestPath();
 
         try {
-            $this->pages()->convertToHtml($path);
+            if ($target === 'html') {
+                $this->pages()->convertToHtml($path);
+                $message = 'Page converted to editable HTML. Review the content before publishing.';
+            } else {
+                $this->pages()->convertToPhp($path);
+                $message = 'Page converted to PHP. Edit the body in code — the visual editor no longer applies.';
+            }
         } catch (\Throwable $e) {
             $this->session()->flash('error', $e->getMessage());
             $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
@@ -167,7 +183,7 @@ final class PageController extends AdminController
         }
 
         $this->clearPageCache();
-        $this->session()->flash('success', 'Page converted to editable HTML. Review the content before publishing.');
+        $this->session()->flash('success', $message);
         $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
 
         return $this->redirect('/admin/pages/edit' . $query);
