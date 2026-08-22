@@ -314,6 +314,53 @@ test('admin media page lists uploads', function () use ($app): void {
     assertTrue(str_contains($response->body(), 'Media'), 'Media heading missing');
 });
 
+test('admin media list json requires login', function () use ($app): void {
+    $store = [];
+    $response = handle($app, Request::fake('GET', '/admin/media/list.json'), $store);
+    assertTrue($response->status() === 403, 'Expected 403, got ' . $response->status());
+});
+
+test('admin media list json returns uploads', function () use ($app, $basePath): void {
+    $store = [];
+    $app->withSession(Session::fake($store));
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+
+    $uploads = $basePath . '/public/uploads';
+    if (!is_dir($uploads)) {
+        mkdir($uploads, 0755, true);
+    }
+    $name = 'list-demo.png';
+    file_put_contents($uploads . '/' . $name, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', true));
+
+    $response = $app->handle(Request::fake('GET', '/admin/media/list.json'));
+    assertTrue($response->status() === 200, 'Expected 200, got ' . $response->status());
+    assertTrue(str_contains($response->body(), $name), 'upload missing from json');
+
+    @unlink($uploads . '/' . $name);
+});
+
+test('admin can stay on page after create', function () use ($app, $basePath): void {
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+
+    $response = $app->handle(Request::fake('POST', '/admin/pages', [], [
+        '_csrf' => $token,
+        'path' => 'stay-demo',
+        'title' => 'Stay Demo',
+        'body' => '<p>Stay here</p>',
+        'stay' => '1',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect');
+    assertTrue(str_contains($response->headers()['Location'] ?? '', '/admin/pages/edit?path=stay-demo'), 'Should redirect to edit');
+
+    @unlink($basePath . '/content/pages/stay-demo/index.html');
+    @unlink($basePath . '/content/pages/stay-demo/page.json');
+    @rmdir($basePath . '/content/pages/stay-demo');
+});
+
 test('admin can convert a PHP page to HTML', function () use ($app, $basePath): void {
     $dir = $basePath . '/content/pages/convert-demo';
     if (!is_dir($dir)) {

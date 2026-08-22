@@ -3,13 +3,17 @@
         <div>
             <p class="eyebrow">Admin</p>
             <h1>Pages</h1>
-            <p>Edit public content under <code>content/pages</code>. New pages are saved as HTML so they stay safe to edit here.</p>
+            <p>Manage public content under <code>content/pages</code>. HTML pages are editable here; PHP templates need conversion first.</p>
         </div>
         <p><a class="button" href="<?= url('/admin/pages/create') ?>">New page</a></p>
     </div>
 
     <?php if ($pages === []): ?>
-        <p>No pages found.</p>
+        <div class="card empty-state">
+            <h2>No pages yet</h2>
+            <p class="muted">Create your first page to add content to the site. Each page gets its own URL, like <code>/about</code> or <code>/services/pricing</code>.</p>
+            <p><a class="button" href="<?= url('/admin/pages/create') ?>">Create your first page</a></p>
+        </div>
     <?php else: ?>
         <table class="data-table">
             <thead>
@@ -24,8 +28,14 @@
                 <?php foreach ($pages as $page): ?>
                     <tr>
                         <td><?= e($page['title']) ?></td>
-                        <td><a href="<?= url($page['url']) ?>"><?= e($page['url']) ?></a></td>
-                        <td><?= e($page['type']) ?><?= $page['editable'] ? '' : ' (code)' ?></td>
+                        <td><a href="<?= url($page['url']) ?>" target="_blank" rel="noopener"><?= e($page['url']) ?></a></td>
+                        <td>
+                            <?php if ($page['editable']): ?>
+                                <span class="badge badge-ok">HTML</span>
+                            <?php else: ?>
+                                <span class="badge badge-muted">PHP</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="table-actions">
                             <a href="<?= url('/admin/pages/edit') . ($page['path'] === '' ? '' : ('?path=' . rawurlencode($page['path']))) ?>">Edit</a>
                             <?php if ($page['path'] !== ''): ?>

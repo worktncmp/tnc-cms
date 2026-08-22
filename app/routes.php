@@ -37,6 +37,7 @@ $router->post('/admin/pages/delete', [AdminPageController::class, 'destroy']);
 $router->post('/admin/pages/convert', [AdminPageController::class, 'convert']);
 
 $router->get('/admin/media', [AdminMediaController::class, 'index'], 'admin.media');
+$router->get('/admin/media/list.json', [AdminMediaController::class, 'list']);
 $router->post('/admin/media', [AdminMediaController::class, 'store']);
 $router->post('/admin/media/delete', [AdminMediaController::class, 'destroy']);
 

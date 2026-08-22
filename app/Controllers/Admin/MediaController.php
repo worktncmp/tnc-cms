@@ -21,6 +21,15 @@ final class MediaController extends AdminController
         ]);
     }
 
+    public function list(): Response
+    {
+        $this->auth()->requirePermission('media.view');
+
+        return Response::json([
+            'files' => $this->media()->all(),
+        ]);
+    }
+
     public function store(): Response
     {
         $this->auth()->requirePermission('media.manage');

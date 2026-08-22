@@ -26,6 +26,7 @@ final class PageController extends AdminController
             'title' => 'New page',
             'page' => null,
             'action' => url('/admin/pages'),
+            'existingPaths' => $this->existingPaths(),
         ]);
     }
 
@@ -62,6 +63,12 @@ final class PageController extends AdminController
         $this->clearPageCache();
         $this->session()->flash('success', 'Page created.');
 
+        if ($this->wantsStayOnPage()) {
+            $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
+
+            return $this->redirect('/admin/pages/edit' . $query);
+        }
+
         return $this->redirect('/admin/pages');
     }
 
@@ -82,6 +89,7 @@ final class PageController extends AdminController
             'title' => 'Edit page',
             'page' => $page,
             'action' => url('/admin/pages/save') . ($path === '' ? '' : '?path=' . rawurlencode($path)),
+            'existingPaths' => $this->existingPaths(),
         ]);
     }
 
@@ -98,6 +106,10 @@ final class PageController extends AdminController
             $this->pages()->update($path, $title, $page['editable'] ? $body : null);
         } catch (\Throwable $e) {
             $this->session()->flash('error', $e->getMessage());
+            $this->session()->flash('old', [
+                'title' => $title,
+                'body' => is_string($body) ? $body : '',
+            ]);
             $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
 
             return $this->redirect('/admin/pages/edit' . $query);
@@ -105,6 +117,12 @@ final class PageController extends AdminController
 
         $this->clearPageCache();
         $this->session()->flash('success', 'Page saved.');
+
+        if ($this->wantsStayOnPage()) {
+            $query = $path === '' ? '' : ('?path=' . rawurlencode($path));
+
+            return $this->redirect('/admin/pages/edit' . $query);
+        }
 
         return $this->redirect('/admin/pages');
     }
@@ -170,5 +188,19 @@ final class PageController extends AdminController
         if (is_file($cache)) {
             unlink($cache);
         }
+    }
+
+    /** @return list<string> */
+    private function existingPaths(): array
+    {
+        return array_map(
+            static fn (array $page): string => (string) $page['path'],
+            $this->pages()->all(),
+        );
+    }
+
+    private function wantsStayOnPage(): bool
+    {
+        return (string) $this->request()->input('stay', '') === '1';
     }
 }
