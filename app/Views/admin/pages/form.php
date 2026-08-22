@@ -5,6 +5,7 @@ $titleValue = old('title', $isEdit ? (string) $page['title'] : '');
 $bodyValue = old('body', $isEdit ? (string) ($page['body'] ?? '') : '');
 $editable = $isEdit ? !empty($page['editable']) : true;
 $previewUrl = $isEdit ? url($page['url']) : null;
+$mediaUrl = url('/admin/media');
 ?>
 <section class="editor-wide">
     <div class="admin-toolbar">
@@ -17,7 +18,7 @@ $previewUrl = $isEdit ? url($page['url']) : null;
                 <a class="button button-quiet" href="<?= e($previewUrl) ?>" target="_blank" rel="noopener">Preview</a>
             <?php endif; ?>
             <?php if (!empty($canMedia)): ?>
-                <a class="button button-quiet" href="<?= url('/admin/media') ?>" target="_blank" rel="noopener">Media library</a>
+                <a class="button button-quiet" href="<?= e($mediaUrl) ?>" target="_blank" rel="noopener">Media library</a>
             <?php endif; ?>
         </div>
     </div>
@@ -36,7 +37,7 @@ $previewUrl = $isEdit ? url($page['url']) : null;
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= e($action) ?>" class="stack" id="page-editor-form">
+    <form method="post" action="<?= e($action) ?>" class="stack" id="page-editor-form" novalidate>
         <?= csrf_field() ?>
         <?php if ($isEdit): ?>
             <input type="hidden" name="path" value="<?= e((string) $page['path']) ?>">
@@ -44,9 +45,9 @@ $previewUrl = $isEdit ? url($page['url']) : null;
         <?php else: ?>
             <label>
                 Path (becomes the URL)
-                <input type="text" name="path" value="<?= e($pathValue) ?>" placeholder="our-team or services/pricing" required>
+                <input type="text" name="path" id="page-path" value="<?= e($pathValue) ?>" placeholder="our-team" pattern="[a-z0-9]+(-[a-z0-9]+)*(/[a-z0-9]+(-[a-z0-9]+)*)*" required>
             </label>
-            <p class="muted">Lowercase letters, numbers, hyphens, and optional slashes. Example: <code>our-team</code> → <code>/our-team</code></p>
+            <p class="muted">Use lowercase only, hyphens instead of spaces. <code>our-team</code> → <code>/our-team</code>. Not <code>Our Team</code>.</p>
         <?php endif; ?>
 
         <label>
@@ -55,19 +56,21 @@ $previewUrl = $isEdit ? url($page['url']) : null;
         </label>
 
         <?php if ($editable): ?>
-            <div>
-                <p class="muted" style="margin-bottom: 0.4rem;">Content tips: use simple HTML. Upload images in Media, copy the URL, then use <strong>Image</strong> below.</p>
-                <div class="editor-toolbar" role="toolbar" aria-label="Formatting">
-                    <button type="button" class="button-quiet" data-wrap="<strong>" data-wrap-end="</strong>">Bold</button>
-                    <button type="button" class="button-quiet" data-wrap="<em>" data-wrap-end="</em>">Italic</button>
-                    <button type="button" class="button-quiet" data-wrap="<h2>" data-wrap-end="</h2>">Heading</button>
-                    <button type="button" class="button-quiet" data-wrap="<p>" data-wrap-end="</p>">Paragraph</button>
-                    <button type="button" class="button-quiet" data-wrap='<a href="https://">' data-wrap-end="</a>">Link</button>
-                    <button type="button" class="button-quiet" data-insert='<img src="" alt="">'>Image</button>
-                    <button type="button" class="button-quiet" data-wrap="<ul>\n  <li>" data-wrap-end="</li>\n</ul>">List</button>
-                </div>
+            <div
+                class="wysiwyg-wrap"
+                data-media-url="<?= e($mediaUrl) ?>"
+                data-uploads-base="<?= e(url('uploads/')) ?>"
+            >
+                <p class="muted" style="margin-bottom: 0.4rem;">
+                    Visual editor (TinyMCE). Upload images in <a href="<?= e($mediaUrl) ?>" target="_blank" rel="noopener">Media</a>,
+                    then use the image button and paste the file URL. Switch to <strong>Code</strong> in the editor for raw HTML.
+                </p>
                 <label class="sr-only" for="page-body">Content</label>
-                <textarea id="page-body" name="body" rows="16" required><?= e($bodyValue) ?></textarea>
+                <textarea id="page-body" name="body" rows="16"><?= e($bodyValue) ?></textarea>
+                <p id="page-body-error" class="alert alert-error" hidden>Please add some page content before saving.</p>
+                <noscript>
+                    <p class="muted">JavaScript is off, so the visual editor is unavailable. Edit HTML in the box above.</p>
+                </noscript>
             </div>
         <?php endif; ?>
 

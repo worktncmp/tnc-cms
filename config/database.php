@@ -15,7 +15,7 @@ return [
     'path' => $path,
     'host' => env('DB_HOST', '127.0.0.1'),
     'port' => env('DB_PORT', '3306'),
-    'name' => env('DB_NAME', 'cms'),
+    'name' => env('DB_NAME', 'cms'), 
     'user' => env('DB_USER', 'root'),
     'pass' => env('DB_PASS', ''),
 ];

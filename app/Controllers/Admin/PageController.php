@@ -48,6 +48,15 @@ final class PageController extends AdminController
             ]);
 
             return $this->redirect('/admin/pages/create');
+        } catch (\Throwable $e) {
+            $this->session()->flash('error', 'Could not create the page. Check the path and try again.');
+            $this->session()->flash('old', [
+                'path' => $path,
+                'title' => $title,
+                'body' => $body,
+            ]);
+
+            return $this->redirect('/admin/pages/create');
         }
 
         $this->clearPageCache();

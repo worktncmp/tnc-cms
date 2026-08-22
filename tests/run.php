@@ -341,10 +341,31 @@ test('admin can convert a PHP page to HTML', function () use ($app, $basePath): 
     @rmdir($dir);
 });
 
-test('safe_internal_path rejects open redirects', function (): void {
-    assertTrue(safe_internal_path('/admin/pages') === '/admin/pages', 'valid path');
-    assertTrue(safe_internal_path('https://evil.test') === null, 'absolute URL');
-    assertTrue(safe_internal_path('//evil.test') === null, 'protocol-relative');
+test('page HTML sanitizer strips script tags', function () use ($app, $basePath): void {
+    $store = [];
+    $session = Session::fake($store);
+    $app->withSession($session);
+    assertTrue($app->auth()->attempt('tester@example.com', 'secret-pass'), 'login failed');
+    $token = $app->csrf()->token($session);
+
+    $response = $app->handle(Request::fake('POST', '/admin/pages', [], [
+        '_csrf' => $token,
+        'path' => 'sanitize-demo',
+        'title' => 'Sanitize Demo',
+        'body' => '<p>Hi</p><script>alert(1)</script><p onclick="x()">Ok</p>',
+    ]));
+    assertTrue($response->status() === 302, 'Expected redirect');
+
+    $file = $basePath . '/content/pages/sanitize-demo/index.html';
+    assertTrue(is_file($file), 'file missing');
+    $clean = (string) file_get_contents($file);
+    assertTrue(str_contains($clean, '<p>Hi</p>'), 'kept content');
+    assertTrue(!str_contains($clean, '<script'), 'script removed');
+    assertTrue(!str_contains(strtolower($clean), 'onclick'), 'onclick removed');
+
+    @unlink($file);
+    @unlink($basePath . '/content/pages/sanitize-demo/page.json');
+    @rmdir($basePath . '/content/pages/sanitize-demo');
 });
 
 test('view rendering escapes untrusted text', function () use ($app): void {

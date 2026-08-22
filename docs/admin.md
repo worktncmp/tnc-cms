@@ -27,9 +27,12 @@ New pages are saved as `index.html` + `page.json` under `content/pages`.
 
 ### Editor help
 
-- Use the toolbar for bold, headings, links, lists, and images.
-- For images: open **Media**, upload, copy the URL, then use **Image** in the editor (or paste an `<img>` tag).
+- HTML pages use a **visual editor** (TinyMCE): bold, lists, links, tables, images, and a Code view for raw HTML.
+- It is **not** the WordPress block editor. No Gutenberg blocks, themes, or plugins.
+- Needs an internet connection the first time (editor loads from a CDN). If the CDN is blocked, simple HTML tools are used instead.
+- For images: open **Media**, upload, copy the URL, then use the image button in the editor.
 - Existing `index.php` “code” pages: change the title anytime. An **admin** can click **Convert to HTML** to make the body editable in admin (this replaces the PHP file).
+- Saved HTML is lightly cleaned (scripts and inline event handlers are stripped).
 
 ## Media
 

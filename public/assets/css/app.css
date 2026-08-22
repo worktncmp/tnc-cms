@@ -327,8 +327,14 @@ button.linkish:hover {
     color: var(--muted);
 }
 
-.editor-wide {
-    max-width: 52rem;
+.wysiwyg-wrap {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.wysiwyg-wrap .tox-tinymce {
+    border-radius: 0;
+    border-color: var(--line);
 }
 
 .editor-toolbar {

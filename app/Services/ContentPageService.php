@@ -106,6 +106,11 @@ final class ContentPageService
             throw new \InvalidArgumentException('Use the home page editor to change the home page.');
         }
 
+        $body = trim($body);
+        if ($body === '' || $body === '<p></p>' || $body === '<p><br></p>') {
+            throw new \InvalidArgumentException('Page content cannot be empty.');
+        }
+
         $directory = $this->directoryFor($path);
         if (is_file($directory . '/index.html') || is_file($directory . '/index.php')) {
             throw new \InvalidArgumentException('A page already exists at that path.');
@@ -217,9 +222,22 @@ final class ContentPageService
     private function normalizeBody(string $body): string
     {
         $body = str_replace("\r\n", "\n", $body);
+        $body = $this->sanitizeHtml($body);
         $body = trim($body);
 
         return $body . "\n";
+    }
+
+    private function sanitizeHtml(string $html): string
+    {
+        $html = preg_replace('#<script\b[^>]*>.*?</script>#is', '', $html) ?? $html;
+        $html = preg_replace('#<iframe\b[^>]*>.*?</iframe>#is', '', $html) ?? $html;
+        $html = preg_replace('#<object\b[^>]*>.*?</object>#is', '', $html) ?? $html;
+        $html = preg_replace('#<embed\b[^>]*/?>#is', '', $html) ?? $html;
+        $html = preg_replace('#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html) ?? $html;
+        $html = preg_replace('#javascript\s*:#i', '', $html) ?? $html;
+
+        return $html;
     }
 
     private function titleFor(string $path, string $directory): string
@@ -256,7 +274,9 @@ final class ContentPageService
         }
 
         if (!preg_match('#^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$#', $path)) {
-            throw new \InvalidArgumentException('Use lowercase letters, numbers, hyphens, and slashes only.');
+            throw new \InvalidArgumentException(
+                'Path must use lowercase letters, numbers, and hyphens only. Example: our-team or services/pricing (not spaces or capitals).',
+            );
         }
 
         return $path;
