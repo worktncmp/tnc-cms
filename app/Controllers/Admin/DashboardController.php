@@ -51,7 +51,6 @@ final class DashboardController extends AdminController
             'pageCount' => $pageCount,
             'mediaCount' => $mediaCount,
             'recentMessages' => $recent,
-            'role' => $this->auth()->role(),
         ]);
     }
 }

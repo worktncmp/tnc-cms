@@ -41,30 +41,8 @@ foreach (explode(';', $sql) as $chunk) {
 
 ensureRoleColumn($db, $driver);
 
-$users = $db->fetch('SELECT COUNT(*) AS total FROM users');
-if ((int) ($users['total'] ?? 0) === 0) {
-    $db->insert('users', [
-        'email' => 'editor@example.com',
-        'password_hash' => $app->auth()->hash('TNC-demo-1'),
-        'name' => 'Admin',
-        'role' => Auth::ROLE_ADMIN,
-        'created_at' => date('c'),
-    ]);
-} else {
-    $demo = $db->fetch('SELECT id FROM users WHERE email = ?', ['editor@example.com']);
-    if ($demo !== null) {
-        $db->update(
-            'users',
-            [
-                'password_hash' => $app->auth()->hash('TNC-demo-1'),
-                'role' => Auth::ROLE_ADMIN,
-                'name' => 'Admin',
-            ],
-            'email = ?',
-            ['editor@example.com'],
-        );
-    }
-}
+ensureDemoUser($db, $app, 'admin@example.com', 'admin1234', 'Admin', Auth::ROLE_ADMIN);
+ensureDemoUser($db, $app, 'editor@example.com', 'editor1234', 'Editor', Auth::ROLE_EDITOR);
 
 $products = $db->fetch('SELECT COUNT(*) AS total FROM products');
 if ((int) ($products['total'] ?? 0) === 0) {
@@ -81,7 +59,46 @@ if ((int) ($products['total'] ?? 0) === 0) {
 }
 
 echo "Database ready.\n";
-echo "Sample admin login: editor@example.com / TNC-demo-1\n";
+echo "Sample admin login: admin@example.com / admin1234\n";
+echo "Sample editor login: editor@example.com / editor1234\n";
+
+/**
+ * @param \Core\Database $db
+ */
+function ensureDemoUser(
+    \Core\Database $db,
+    Application $app,
+    string $email,
+    string $password,
+    string $name,
+    string $role,
+): void {
+    $hash = $app->auth()->hash($password);
+    $existing = $db->fetch('SELECT id FROM users WHERE email = ?', [$email]);
+
+    if ($existing === null) {
+        $db->insert('users', [
+            'email' => $email,
+            'password_hash' => $hash,
+            'name' => $name,
+            'role' => $role,
+            'created_at' => date('c'),
+        ]);
+
+        return;
+    }
+
+    $db->update(
+        'users',
+        [
+            'password_hash' => $hash,
+            'name' => $name,
+            'role' => $role,
+        ],
+        'email = ?',
+        [$email],
+    );
+}
 
 /**
  * @param \Core\Database $db
@@ -96,6 +113,7 @@ function ensureRoleColumn(\Core\Database $db, string $driver): void
             }
         }
         $db->pdo()->exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'editor'");
+
         return;
     }
 

@@ -10,7 +10,7 @@ This guide is for people who change website text, titles, and pages. You do not 
 
 The easiest way to manage pages and images is through the admin area after signing in.
 
-1. Go to `/login` (sample admin: `editor@example.com` / `TNC-demo-1`).
+1. Go to `/login` (sample editor: `editor@example.com` / `editor1234`).
 2. Open **Pages** to create, edit, or delete HTML pages.
 3. Open **Media** to upload images, then insert them from the page editor toolbar.
 

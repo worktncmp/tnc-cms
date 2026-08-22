@@ -12,33 +12,39 @@ require $basePath . '/core/helpers.php';
 
 /** @var Application $app */
 $app = require $basePath . '/bootstrap/app.php';
+$db = $app->db();
 
-$email = 'editor@example.com';
-$password = 'TNC-demo-1';
-$hash = $app->auth()->hash($password);
+$demos = [
+    ['admin@example.com', 'admin1234', 'Admin', Auth::ROLE_ADMIN],
+    ['editor@example.com', 'editor1234', 'Editor', Auth::ROLE_EDITOR],
+];
 
-$user = $app->db()->fetch('SELECT id FROM users WHERE email = ?', [$email]);
-if ($user === null) {
-    $app->db()->insert('users', [
-        'email' => $email,
-        'password_hash' => $hash,
-        'name' => 'Admin',
-        'role' => Auth::ROLE_ADMIN,
-        'created_at' => date('c'),
-    ]);
-    echo "Created {$email}\n";
-} else {
-    $app->db()->update(
-        'users',
-        [
+foreach ($demos as [$email, $password, $name, $role]) {
+    $hash = $app->auth()->hash($password);
+    $user = $db->fetch('SELECT id FROM users WHERE email = ?', [$email]);
+    if ($user === null) {
+        $db->insert('users', [
+            'email' => $email,
             'password_hash' => $hash,
-            'role' => Auth::ROLE_ADMIN,
-            'name' => 'Admin',
-        ],
-        'email = ?',
-        [$email],
-    );
-    echo "Updated password and role for {$email}\n";
+            'name' => $name,
+            'role' => $role,
+            'created_at' => date('c'),
+        ]);
+        echo "Created {$email}\n";
+    } else {
+        $db->update(
+            'users',
+            [
+                'password_hash' => $hash,
+                'name' => $name,
+                'role' => $role,
+            ],
+            'email = ?',
+            [$email],
+        );
+        echo "Updated {$email}\n";
+    }
 }
 
-echo "Login with: {$email} / {$password} (admin)\n";
+echo "Admin: admin@example.com / admin1234\n";
+echo "Editor: editor@example.com / editor1234\n";

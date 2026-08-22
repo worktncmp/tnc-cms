@@ -26,6 +26,7 @@ abstract class AdminController extends Controller
         $data['canProducts'] = $this->auth()->can('products.view');
         $data['canUsers'] = $this->auth()->can('users.view');
         $data['isAdmin'] = $this->auth()->isAdmin();
+        $data['role'] = $this->auth()->role();
 
         return $this->view($name, $data, 'admin');
     }

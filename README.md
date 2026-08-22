@@ -33,13 +33,13 @@ Open [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
 Sample login (admin):
 
+- Email: `admin@example.com`
+- Password: `admin1234`
+
+Sample login (editor):
+
 - Email: `editor@example.com`
-- Password: `TNC-demo-1`
-
-Sample login (writer):
-
-- Email: `writer@example.com`
-- Password: `a-strong-password`
+- Password: `editor1234`
 
 ---
 

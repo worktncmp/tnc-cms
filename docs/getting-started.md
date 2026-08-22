@@ -64,9 +64,9 @@ Leave that window open. Visit:
 ## 6. Sign in to the admin area
 
 1. Visit **http://127.0.0.1:8080/login**
-2. Use:
-   - Email: `editor@example.com`
-   - Password: `TNC-demo-1`
+2. Sample accounts:
+   - Admin: `admin@example.com` / `admin1234`
+   - Editor: `editor@example.com` / `editor1234`
 3. You are taken to `/admin` where you can:
    - Create and edit HTML content pages
    - Upload images in Media

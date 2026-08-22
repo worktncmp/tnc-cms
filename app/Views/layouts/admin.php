@@ -10,6 +10,9 @@
     <header class="admin-top">
         <div class="wrap header-inner">
             <a class="logo" href="<?= url('/admin') ?>"><?= e($appName) ?> Admin</a>
+            <?php if (!empty($role)): ?>
+                <span class="admin-role muted"><?= e($role) ?></span>
+            <?php endif; ?>
             <nav class="site-nav" aria-label="Admin">
                 <div class="nav-links is-open" id="menu" style="display:flex">
                     <a href="<?= url('/admin') ?>"<?= ($currentPath ?? '') === '/admin' ? ' aria-current="page"' : '' ?>>Dashboard</a>

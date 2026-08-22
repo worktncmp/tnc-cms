@@ -40,7 +40,7 @@ Use `Auth::hash()` / `password_hash`. Never store plain passwords.
 - `/admin` and related URLs require sign-in
 - Actions check role permissions (`admin` vs `editor`)
 - HTML saved from the page editor is sanitized before write
-- Change or remove the sample `editor@example.com` user before go-live
+- Change or remove the sample `admin@example.com` and `editor@example.com` users before go-live
 
 ## Errors
 
@@ -52,5 +52,5 @@ Production: `APP_DEBUG=false`. Visitors see generic error pages. Details go to `
 2. Strong database password, not in git
 3. HTTPS
 4. `php scripts/cache-pages.php` after page changes (admin saves clear cache automatically; run manually after editing files on disk)
-5. Change or remove the sample `editor@example.com` user
+5. Change or remove the sample demo users (`admin@example.com`, `editor@example.com`)
 6. `storage/` writable, not listable

@@ -6,12 +6,14 @@ The admin area is a built-in back office for signed-in users. Public pages still
 
 1. Start the site (see [getting-started.md](getting-started.md)).
 2. Go to `/login`.
-3. Sample admin: `editor@example.com` / `TNC-demo-1`
+3. Sample accounts:
+   - Admin: `admin@example.com` / `admin1234`
+   - Editor: `editor@example.com` / `editor1234`
 4. You land on `/admin` (or the page you tried to open before signing in).
 
 ## Dashboard
 
-`/admin` shows counts and shortcuts for the sections you are allowed to use.
+`/admin` shows counts and shortcuts for the sections you are allowed to use. Your role (`admin` or `editor`) appears in the admin header.
 
 ## Pages
 
@@ -69,12 +71,12 @@ Create, edit, and delete Work items shown on `/products`.
 Manage users at `/admin/users` (admin only).
 
 ```text
-php scripts/create-user.php writer@example.com a-strong-password "Writer" editor
+php scripts/create-user.php editor@example.com editor1234 "Editor" editor
 ```
 
 ## Account
 
-Change your own password at `/admin/account`.
+Change your own password at `/admin/account`. Your **role** is shown on the account page (not your display name).
 
 ## Login redirect
 

@@ -15,7 +15,7 @@ $current = $currentPath ?? '/';
             <a href="<?= url($href) ?>"<?= $current === $href || ($href !== '/' && str_starts_with($current, $href)) ? ' aria-current="page"' : '' ?>><?= e($label) ?></a>
         <?php endforeach; ?>
         <?php if (!empty($currentUser)): ?>
-            <a href="<?= url('/admin') ?>"<?= str_starts_with($current, '/admin') ? ' aria-current="page"' : '' ?>>Admin</a>
+            <a href="<?= url('/admin') ?>"<?= str_starts_with($current, '/admin') ? ' aria-current="page"' : '' ?>>Dashboard</a>
         <?php else: ?>
             <a href="<?= url('/login') ?>">Sign in</a>
         <?php endif; ?>

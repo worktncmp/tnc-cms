@@ -1,7 +1,8 @@
 <section class="narrow">
     <p class="eyebrow">Admin</p>
     <h1>Your account</h1>
-    <p>Signed in as <strong><?= e($user['name'] ?? '') ?></strong> (<?= e($user['email'] ?? '') ?>).</p>
+    <p>Signed in as <strong><?= e($user['email'] ?? '') ?></strong>.</p>
+    <p class="muted">Role: <strong><?= e($user['role'] ?? 'editor') ?></strong><?php if (!empty($user['name'])): ?> · <?= e($user['name']) ?><?php endif; ?></p>
 
     <h2>Change password</h2>
     <form method="post" action="<?= url('/admin/account/password') ?>" class="stack">

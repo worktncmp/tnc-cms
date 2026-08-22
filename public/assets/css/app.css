@@ -264,6 +264,18 @@ textarea {
     background: #faf7f1;
 }
 
+.admin-top .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+}
+
+.admin-role {
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
 .admin-main {
     padding: 2rem 0 3rem;
 }
