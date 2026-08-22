@@ -10,6 +10,8 @@ This guide gets TNC-CMS running on your computer.
 
 You do **not** need Composer, Node, or MySQL for local learning (SQLite is used by default).
 
+TNC-CMS is a **small admin-backed CMS**: public pages are files on disk; signed-in editors manage content through `/admin` without installing WordPress or Laravel.
+
 ## 1. Open the project
 
 In a terminal, go to the project folder (the folder that contains `public`, `app`, and `core`).
@@ -66,17 +68,19 @@ Leave that window open. Visit:
    - Email: `editor@example.com`
    - Password: `TNC-demo-1`
 3. You are taken to `/admin` where you can:
-   - Edit content pages
+   - Create and edit HTML content pages
+   - Upload images in Media
    - Read contact messages
    - (Admins) manage products and users
    - Change your password
 
-Public pages still work without signing in.
+Public pages still work without signing in. See [Admin](admin.md) for the full admin guide.
 
 ## What next?
 
-- Change page text → [For editors](for-editors.md)
+- Edit pages and media in admin → [Admin](admin.md) and [For editors](for-editors.md)
 - Add forms or database pages → [For developers](for-developers.md)
+- How the system is designed → [Architecture](architecture.md)
 - See every folder explained → [Folder guide](folder-guide.md)
 
 ## Production note

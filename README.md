@@ -1,9 +1,10 @@
 # TNC-CMS
 
-TNC-CMS is a small PHP website foundation. Copy this project, configure it, add pages as folders, and use controllers only when you need forms or a database.
+TNC-CMS is a small, dependency-free PHP website CMS. Copy this project, configure it, add pages as folders or through the admin area, and use controllers only when you need forms or a database.
 
 - PHP 8.2+
 - Web root is always `public/`
+- No Composer or npm required
 
 ---
 
@@ -54,13 +55,14 @@ Sample login (writer):
 | `/products` | Database list via controller |
 | `/admin` | Protected admin (after sign in) |
 
-Sample login opens the **admin area**, where you can read contact messages and manage products.
+Sample login opens the **admin area** — edit HTML pages, upload media, read contact messages, and (as admin) manage products and users.
 
 ---
 
 ## Core idea
 
 1. Normal pages live in `content/pages`. Folder name = URL.
-2. Header, footer, and menu live in `app/Views/partials`.
-3. Forms and database pages use `app/Controllers` and `app/routes.php`.
-4. Do not edit `core/` for a normal website.
+2. Editors can create and edit HTML pages at `/admin/pages` (saved as `index.html` on disk).
+3. Header, footer, and menu live in `app/Views/partials`.
+4. Forms and database pages use `app/Controllers` and `app/routes.php`.
+5. Do not edit `core/` for a normal website.

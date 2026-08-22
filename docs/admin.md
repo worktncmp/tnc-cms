@@ -1,6 +1,6 @@
 # Admin
 
-The admin area is for signed-in users. Public pages still work without login.
+The admin area is a built-in back office for signed-in users. Public pages still work without login — visitors never load admin assets.
 
 ## Open it
 
@@ -20,7 +20,7 @@ The admin area is for signed-in users. Public pages still work without login.
 | List pages | `/admin/pages` |
 | Create a page | `/admin/pages/create` |
 | Edit a page | Edit link in the list |
-| Preview | Preview button on the edit screen |
+| View on site | View live button on the edit screen |
 | Delete a page | Delete link (not for home) |
 
 New pages are saved as `index.html` + `page.json` under `content/pages`.
@@ -29,10 +29,14 @@ New pages are saved as `index.html` + `page.json` under `content/pages`.
 
 - HTML pages use a **visual editor** (TinyMCE): bold, lists, links, tables, images, and a Code view for raw HTML.
 - It is **not** the WordPress block editor. No Gutenberg blocks, themes, or plugins.
-- Needs an internet connection the first time (editor loads from a CDN). If the CDN is blocked, simple HTML tools are used instead.
-- For images: open **Media**, upload, copy the URL, then use the image button in the editor.
+- TinyMCE loads from a CDN **only on the page edit screen** — not on every admin page or on the public site.
+- If the CDN is blocked, simple HTML toolbar buttons are used instead.
+- For images: click the **image** button in the editor toolbar to open the Media library picker, or upload first at **Media**.
+- **Save** keeps you on the edit screen. **Save and close** returns to the pages list.
 - Existing `index.php` “code” pages: change the title anytime. An **admin** can click **Convert to HTML** to make the body editable in admin (this replaces the PHP file).
 - Saved HTML is lightly cleaned (scripts and inline event handlers are stripped).
+
+URL paths must be lowercase with hyphens (e.g. `our-team`, not `Our Team`). The path field auto-formats as you type.
 
 ## Media
 
@@ -41,6 +45,7 @@ New pages are saved as `index.html` + `page.json` under `content/pages`.
 - Upload jpg / jpeg / png / gif / webp (max 2 MB)
 - Copy URL or copy a ready `<img>` tag
 - Delete unused files
+- JSON list at `/admin/media/list.json` (login required; used by the page editor image picker)
 
 Files are stored in `public/uploads/`.
 
@@ -73,3 +78,7 @@ Change your own password at `/admin/account`.
 ## Login redirect
 
 If you open `/admin/pages` while logged out, you get 403 → Sign in → after login you return to `/admin/pages`.
+
+## How admin relates to the rest of the CMS
+
+Admin does not replace convention routing. It writes files under `content/pages` and uploads to `public/uploads`. The public site keeps serving those files through the same folder → URL rules described in [Architecture](architecture.md).

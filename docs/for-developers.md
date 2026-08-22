@@ -1,9 +1,9 @@
 # For developers
 
-TNC-CMS is PHP 8.2+, no Composer packages, no third-party framework.
+TNC-CMS is PHP 8.2+, no Composer packages, no third-party framework. It combines convention-based public pages with an admin area for editors (`/admin`).
 
 - Website code: `app/`
-- Content pages: `content/pages/`
+- Content pages: `content/pages/` (also writable from admin)
 - Engine: `core/` (leave alone for normal sites)
 
 ---
@@ -168,7 +168,9 @@ $this->auth()->can('pages.manage');
 $this->auth()->requirePermission('products.manage');
 ```
 
-Roles: `admin`, `editor`. Controllers live under `app/Controllers/Admin/`.
+Roles: `admin`, `editor`. Controllers live under `app/Controllers/Admin/`. File-based admin work uses `app/Services/` (`ContentPageService`, `MediaService`).
+
+See [Admin](admin.md) and [Architecture](architecture.md) for how the admin layer fits the rest of the system.
 
 ---
 
